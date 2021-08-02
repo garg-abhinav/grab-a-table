@@ -1,0 +1,40 @@
+{% extends "restaurant/base.html" %}
+
+
+{% block content %}
+<table class="table table-borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td><h3>Menu Item</h3></td>
+            <td><h3>Ingredient</h3></td>
+            <td><h3>Quantity</h3></td>
+            <td>
+                <a href="{% url 'recipe_insert' %}" class="btn btn-outline-success">
+                    <i class="fas fa-plus" justify-content-right></i> Add New
+                </a>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recipe in recipe_list %}
+            <tr>
+                <td>{{recipe.food_item}}</td>
+                <td>{{recipe.ingredient}}</td>
+                <td>{{recipe.ingredient_quantity}}</td>
+                <td>
+                    <a href="{% url 'recipe_update' recipe.id %}" class="btn btn-outline-info text-primary px-0">
+                        <i class="far fa-edit fa-lg"></i>
+                    </a>
+                    <form action="{% url 'recipe_delete' recipe.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">
+                            <i class="far fa-trash-alt fa-lg text-danger float-right"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}

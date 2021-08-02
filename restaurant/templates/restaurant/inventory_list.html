@@ -1,0 +1,40 @@
+{% extends "restaurant/base.html" %}
+
+
+{% block content %}
+<table class="table table-borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td><h3>Ingredient</h3></td>
+            <td><h3>Quantity</h3></td>
+            <td><h3>Last Updated</h3></td>
+            <td>
+                <a href="{% url 'inventory_insert' %}" class="btn btn-outline-success">
+                    <i class="fas fa-plus"></i> Add New
+                </a>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for inventory in inventory_list %}
+            <tr>
+                <td>{{inventory.ingredient}}</td>
+                <td>{{inventory.qty_available}}</td>
+                <td>{{inventory.last_update_timestamp}}</td>
+                <td>
+                    <a href="{% url 'inventory_update' inventory.id %}" class="btn btn-outline-info text-primary px-0">
+                        <i class="far fa-edit fa-lg"></i>
+                    </a>
+                    <form action="{% url 'inventory_delete' inventory.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">
+                            <i class="far fa-trash-alt fa-lg text-danger float-right"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}

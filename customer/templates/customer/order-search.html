@@ -1,0 +1,21 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-9 col-sm-12 text-center">
+            <h1>Enter Phone Number to Retrieve Order</h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-sm-12 text-center">
+            <form method="GET" action="{% url 'results' %}">
+                <div class="md-form mt-0 active-cyan-2">
+                    <input class="form-control" name="r" type="text" placeholder="Phone Number" aria-label="Search" value="{{ request.GET.r }}">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
