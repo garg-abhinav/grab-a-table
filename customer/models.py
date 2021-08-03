@@ -45,7 +45,6 @@ class Inventory(models.Model):
 
     class Meta:
         db_table = 'Inventory'
-        unique_together = (('last_update_timestamp', 'ingredient'),)
 
 
 class Menu(models.Model):
