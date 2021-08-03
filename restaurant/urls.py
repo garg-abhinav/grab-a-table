@@ -18,12 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
-from .views import Dashboard, AllOrders, OrderDetails, HistoricOrderDetails, Advanced
+from .views import Dashboard, AllOrders, OrderDetails, HistoricOrderDetails, Advanced, CustomerExperience
 
 urlpatterns = [
     path('dashboard/', Dashboard.as_view(), name='dashboard'),
     path('allorders/', AllOrders.as_view(), name='allorders'),
     path('advanced/', Advanced.as_view(), name='advanced'),
+    path('customer-experience/', CustomerExperience.as_view(), name='customer_experience'),
     path('orders/<int:pk>/', OrderDetails.as_view(), name='order-details'),
     path('historic-orders/<int:pk>/', HistoricOrderDetails.as_view(), name='historic-order-details'),
     path('inventory-insert/', views.inventory_form,name='inventory_insert'),
