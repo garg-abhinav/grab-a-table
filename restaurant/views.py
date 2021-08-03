@@ -127,7 +127,18 @@ class HistoricOrderDetails(View):
         return render(request, 'restaurant/order-details1.html', context)
 
 def inventory_list(request):
-    context = {'inventory_list': Inventory.objects.all().order_by('-inventory_id')[0:25]}
+
+    l = Inventory.objects.all().order_by('-inventory_id')[0:25]
+    ingredients = []
+    empty = []
+    l = list(l)
+    for item in l:
+        if item.ingredient not in ingredients:
+            item.qty_available = round(item.qty_available, 2)
+            ingredients.append(item.ingredient)
+            empty.append(item)
+
+    context = {'inventory_list': empty}
     return render(request, "restaurant/inventory_list.html", context)
 
 
@@ -156,7 +167,7 @@ def inventory_delete(request,id):
     return redirect('/restaurant/inventory-list')
 
 def recipe_list(request):
-    context = {'recipe_list': Recipe.objects.raw('SELECT * FROM deliver.Recipe')}
+    context = {'recipe_list': Recipe.objects.raw('SELECT * FROM deliver.Recipe LIMIT 50')}
     return render(request, "restaurant/recipe_list.html", context)
 
 
