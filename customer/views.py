@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.db.models import Max
 from django.core.mail import send_mail
 from django.db import connection
+from django.utils.timezone import datetime
+from django.utils import timezone
 from .models import Menu, Orders, Diners, Paymentmethod, Promotions, Cart
 
 
@@ -47,12 +49,9 @@ class OrderSearch(View):
 class Results(View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get("r")
-        this = int(query)
-        print(type(query))
 
         try:
-            diner = Diners.objects.raw('SELECT * FROM deliver.Diners WHERE mobile_number = %s', [this])[0]
-            print(diner)
+            diner = Diners.objects.raw('SELECT * FROM deliver.Diners WHERE mobile_number = %s', [query])[0]
         except Diners.DoesNotExist:
              return render(request, 'customer/customer_orders.html')
 
@@ -80,7 +79,26 @@ class CustomerOrderDetails(View):
         }
 
         return render(request, 'customer/customer_order_details.html', context)
+    def post(self, request, pk, *args, **kwargs):
+        rating = request.POST.get('rating')
+        feedback = request.POST.get('feedback')
+        order = Orders.objects.get(pk=pk)
+        order.status= 'completed'
+        order.order_completed_at = datetime.now()
+        order.rating = rating
+        order.feedback = feedback
+        order.save()
+        set = Cart.objects.filter(order = order)
+        food = []
+        for item in set:
+            food.append(item.food_item)
+        
+        context = {
+            'order': order,
+            'food': food
+        }
 
+        return render(request, 'restaurant/order-details.html', context)
 
 
 
@@ -109,11 +127,9 @@ class Order(View):
         }
 
         items = request.POST.getlist('items[]')
-        # print(items)
 
         for item in items:
             menu_item = Menu.objects.get(food_item_id=int(item))
-            print(menu_item.food_item_desc)
             item_data = {
                 'id': menu_item.food_item_id,
                 'name': menu_item.food_item_desc,
@@ -143,11 +159,15 @@ class Order(View):
 
         order = Orders.objects.create(
             order_id = id_next,
-            total_billed_amount=price,
+            transaction_id = id_next,
+            total_billed_amount = price,
             mobile_number=diner,
             promo_code=promoObject,
             payment_method=bill
         )
+
+        #with connection.cursor() as x:
+        #    x.execute('CALL OrderUpdate(%s, %s, %s, %s)', [id_next, mobile_number, id_next, payment_method])
         
         for id in item_ids:
             item = Menu.objects.filter(food_item_id = id)[0]
@@ -158,7 +178,9 @@ class Order(View):
             )
 
             with connection.cursor() as c:
-                    c.execute('CALL InventoryUpdate(%s, %s, %s)', [id_next, id, 1])
+                c.execute('CALL InventoryUpdate(%s, %s, %s)', [id_next, id, 1])
+    
+        
 
         
         

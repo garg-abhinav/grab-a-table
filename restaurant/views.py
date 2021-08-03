@@ -103,9 +103,15 @@ class OrderDetails(View):
         order.order_status='completed'
         order.order_completed_at = datetime.now()
         order.save()
+        order1 = Orders.objects.get(order_id=pk)
+        set = Cart.objects.filter(order = order1)
+        food = []
+        for item in set:
+            food.append(item.food_item)
 
         context = {
-            'order': order
+            'food': food,
+            'order': order1
         }
 
         return render(request, 'restaurant/order-details.html', context)
@@ -200,3 +206,35 @@ def recipe_deletes(request,id):
 
     
     return redirect('/restaurant/recipe-list')
+
+class Advanced(View):
+    def get(self, request, *args, **kwargs):
+
+        #orders1 = .objects.raw('SELECT * FROM badDays')
+        #orders2 = Orders.objects.values('order_completed_at').annotate(avg_rating = Avg('rating'), count = Count("order_id")).order_by('-count')
+        #print(orders1)
+
+        dict = {}
+        temp = {}
+        x = []
+
+        bad = Orders.objects.raw('SELECT * FROM Orders WHERE rating <=3')
+        for l in bad:
+            r = Cart.objects.filter(order = l.order_id)
+            for item in r:
+                x.append(item.food_item.food_item_desc)
+        print(x)
+
+        for food in x:
+            dict[food] = dict.get(food, 0)+1
+        print(dict)
+
+        temp = sorted(dict.items(), key=lambda x: x[1], reverse=True)
+        print(temp)
+
+        # pass total number of orders and total revenue into template
+        context = {
+            'poor': temp
+        }
+
+        return render(request, 'restaurant/output1.html', context)

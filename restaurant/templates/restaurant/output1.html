@@ -1,0 +1,23 @@
+{% extends "restaurant/base.html" %}
+
+
+{% block content %}
+<h2 style="text-align:center">Low Rated Foods</h2>
+<table class="table table-borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td><h3>Food</h3></td>
+            <td><h3>Low Rating Order Count</h3></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key, value in poor %}
+            <tr>
+                <td>{{key}}</td>
+                <td>{{value}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}
