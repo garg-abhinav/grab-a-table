@@ -75,7 +75,7 @@ class AllOrders(View):
 
         # pass total number of orders and total revenue into template
         context = {
-            'orders': unshipped_orders,
+            'orders': unshipped_orders[:50],
             'total_revenue': round(total_revenue, 2),
             'total_orders': len(orders)
         }
@@ -207,6 +207,7 @@ def recipe_deletes(request,id):
     
     return redirect('/restaurant/recipe-list')
 
+
 class Advanced(View):
     def get(self, request, *args, **kwargs):
 
@@ -225,7 +226,7 @@ class Advanced(View):
                 x.append(item.food_item.food_item_desc)
         print(x)
 
-        for food in x:
+        for food in x[0:50]:
             dict[food] = dict.get(food, 0)+1
         print(dict)
 
@@ -238,3 +239,20 @@ class Advanced(View):
         }
 
         return render(request, 'restaurant/output1.html', context)
+
+class IngredientSearch(View):
+    def get(self, request, *args, **kwargs):
+        query = self.request.GET.get("q")
+
+        menu_items = Menu.objects.filter(Q(food_item_desc__icontains=query))
+
+        context = {
+            'menu_items': menu_items
+        }
+
+        return render(request, 'customer/menu.html', context)
+
+class CustomerExperience(View):
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'restaurant/customer_experience.html')

@@ -1,15 +1,17 @@
 {% extends 'restaurant/base.html' %}
 
+
 {% block content %}
+<script type='text/javascript' src='https://10ay.online.tableau.com/javascripts/api/viz_v1.js'></script><div class='tableauPlaceholder' style='width: 1440px; height: 735px;'><object class='tableauViz' width='1440' height='735' style='display:none;'><param name='host_url' value='https%3A%2F%2F10ay.online.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='&#47;t&#47;cs411projectsitet6' /><param name='name' value='Arrowheads&#47;HistoricalOrdersInsights_1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='showAppBanner' value='false' /></object></div>
     <div class="container">
         <div class="row justify-content-center mt-3">
             <div class="card col-md-5 mr-3">
-                <h4 class="text-center pt-2">Today's Total Revenue</h4>
+                <h4 class="text-center pt-2">All Time Total Revenue</h4>
                 <h1 class="text-center" style="color: green;">${{ total_revenue }}</h1>
             </div>
 
             <div class="card col-md-5 mr-3">
-                <h4 class="text-center pt-2">Today's Total Orders</h4>
+                <h4 class="text-center pt-2">All Time Total Orders</h4>
                 <h1 class="text-center" style="color: #ad0003;">{{ total_orders }}</h1>
             </div>
         </div>
