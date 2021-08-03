@@ -157,8 +157,8 @@ class Order(View):
                 qty = 1
             )
 
-            with connection.cursor() as cursor:
-                    cursor.callproc('InventoryUpdate', [id_next, id, 1])
+            with connection.cursor() as c:
+                    c.execute('CALL InventoryUpdate(%s, %s, %s)', [id_next, id, 1])
 
         
         
