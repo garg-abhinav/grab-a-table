@@ -12,7 +12,6 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
 
-
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
@@ -24,15 +23,12 @@ class MenuView(View):
         context = {
             'menu_items': menu_items
         }
-
         return render(request, 'customer/menu.html', context)
 
 class MenuSearch(View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get("q")
-
         menu_items = Menu.objects.filter(Q(food_item_desc__icontains=query))
-
         context = {
             'menu_items': menu_items
         }
@@ -142,7 +138,7 @@ class Order(View):
         id_next = Orders.objects.count()+1
 
         order = Orders.objects.create(
-            order_id = id_next,
+            order_id=id_next,
             total_billed_amount=price,
             mobile_number=diner,
             promo_code=promoObject,
@@ -150,7 +146,7 @@ class Order(View):
         )
         
         for id in item_ids:
-            item = Menu.objects.filter(food_item_id = id)[0]
+            item = Menu.objects.filter(food_item_id=id)[0]
             Cart.objects.create(
                 food_item = item, 
                 order = order,
