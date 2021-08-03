@@ -4,6 +4,7 @@ from django.views import View
 from django.db.models import Q
 from django.db.models import Max
 from django.core.mail import send_mail
+from django.db import connection
 from .models import Menu, Orders, Diners, Paymentmethod, Promotions, Cart
 
 
@@ -30,9 +31,7 @@ class MenuSearch(View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get("q")
 
-        menu_items = Menu.objects.filter(
-            Q(food_item_desc__icontains=query)
-        )
+        menu_items = Menu.objects.filter(Q(food_item_desc__icontains=query))
 
         context = {
             'menu_items': menu_items
@@ -48,9 +47,12 @@ class OrderSearch(View):
 class Results(View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get("r")
+        this = int(query)
+        print(type(query))
 
         try:
-            diner = Diners.objects.get(mobile_number = query)
+            diner = Diners.objects.raw('SELECT * FROM deliver.Diners WHERE mobile_number = %s', [this])[0]
+            print(diner)
         except Diners.DoesNotExist:
              return render(request, 'customer/customer_orders.html')
 
@@ -129,12 +131,13 @@ class Order(View):
 
         diner, temp = Diners.objects.get_or_create(mobile_number=mobile_number)
         bill, temp = Paymentmethod.objects.get_or_create(payment_method=payment_method, payment_desc=payment_description)
+        
         try:
             promoObject = Promotions.objects.get(promo_code = promo)
         except Promotions.DoesNotExist:
             promoObject, temp = Promotions.objects.get_or_create(promo_code = 'NONE', discount_percent = 1)
 
-        price = price*promoObject.discount_percent
+        price = price
         
         id_next = Orders.objects.count()+1
 
@@ -154,11 +157,14 @@ class Order(View):
                 qty = 1
             )
 
+            with connection.cursor() as cursor:
+                    cursor.callproc('InventoryUpdate', [id_next, id, 1])
+
         
         
         context = {
             'items': order_items['items'],
-            'price': price
+            'price': order.total_billed_amount
         }
 
         return redirect('order-confirmation', pk=order.order_id)

@@ -10,6 +10,29 @@ import calendar
 from customer.models import Menu, Orders, Diners, Paymentmethod, Promotions, Cart, Inventory, Recipe
 from .forms import InventoryForm, RecipeForm
 
+def recipe_delete(request,id):
+    recipe = Recipe.objects.get(pk=id)
+    recipe.delete()
+    
+    return redirect('/restaurant/recipe-list')
+
+def recipe_sheet(request, id=0):
+    if request.method == "GET":
+        if id == 0:
+            form = RecipeForm()
+        else:
+            recipe = Recipe.objects.get(pk=id)
+            form = RecipeForm(instance=recipe)
+        return render(request, "restaurant/recipe_form.html", {'form': form})
+    else:
+        if id == 0:
+            form = RecipeForm(request.POST)
+        else:
+            recipe = Recipe.objects.get(pk=id)
+            form = RecipeForm(request.POST,instance= recipe)
+        if form.is_valid():
+            form.save()
+        return redirect('/restaurant/recipe-list')
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -104,7 +127,7 @@ class HistoricOrderDetails(View):
         return render(request, 'restaurant/order-details1.html', context)
 
 def inventory_list(request):
-    context = {'inventory_list': Inventory.objects.all()}
+    context = {'inventory_list': Inventory.objects.all().order_by('-inventory_id')[0:25]}
     return render(request, "restaurant/inventory_list.html", context)
 
 
@@ -116,6 +139,7 @@ def inventory_form(request, id=0):
             inventory = Inventory.objects.get(pk=id)
             form = InventoryForm(instance=inventory)
         return render(request, "restaurant/inventory_form.html", {'form': form})
+
     else:
         if id == 0:
             form = InventoryForm(request.POST)
@@ -132,30 +156,36 @@ def inventory_delete(request,id):
     return redirect('/restaurant/inventory-list')
 
 def recipe_list(request):
-    context = {'recipe_list': Recipe.objects.all()}
+    context = {'recipe_list': Recipe.objects.raw('SELECT * FROM deliver.Recipe')}
     return render(request, "restaurant/recipe_list.html", context)
 
 
-def recipe_form(request, id=0):
+def recipe_forms(request, id=0):
     if request.method == "GET":
         if id == 0:
             form = RecipeForm()
         else:
             recipe = Recipe.objects.get(pk=id)
             form = RecipeForm(instance=recipe)
+
         return render(request, "restaurant/recipe_form.html", {'form': form})
     else:
+        food = request.POST.get('food_item')
+        ingred = request.POST.get('ingredient')
+        qty = request.POST.get('ingredient_qty')
+
         if id == 0:
-            form = RecipeForm(request.POST)
+            Recipe.objects.raw('INSERT INTO deliver.Recipe VALUES %s, %s, %s', [food, ingred, qty])
         else:
-            recipe = Recipe.objects.get(pk=id)
-            form = RecipeForm(request.POST,instance= recipe)
-        if form.is_valid():
-            form.save()
+            Recipe.objects.raw('UPDATE deliver.Recipe SET food_item = %s, ingredient = %s, ingredient_quantity = %s WHERE pk = %s', [food, ingred, qty, id])
+
         return redirect('/restaurant/recipe-list')
 
 
-def recipe_delete(request,id):
-    recipe = Recipe.objects.get(pk=id)
-    recipe.delete()
+def recipe_deletes(request,id):
+    #recipe = Recipe.objects.get(pk=id)
+    #recipe.delete()
+    Recipe.objects.raw('DELETE FROM deliver.Recipe WHERE pk = %s', [id])
+
+    
     return redirect('/restaurant/recipe-list')

@@ -61,11 +61,14 @@ class Menu(models.Model):
 
     class Meta:
         db_table = 'Menu'
+    
+    def __str__(self):
+        return self.food_item_desc
 
 
 class Orders(models.Model):
     order_id = models.IntegerField(primary_key=True)
-    order_placed_at = models.DateTimeField(auto_now_add=True)
+    order_placed_at = models.DateTimeField(auto_now_add=True, null=True)
     order_completed_at = models.DateTimeField(blank=True, null=True)
     order_status = models.CharField(max_length=50, blank=True, null=True,  default='preparing')
     mobile_number = models.ForeignKey(Diners,   db_column='mobile_number', blank=True, null=True, on_delete=models.CASCADE)
@@ -105,7 +108,7 @@ class Promotions(models.Model):
 
 
 class Recipe(models.Model):
-    food_item = models.OneToOneField(Menu, on_delete=models.CASCADE)
+    food_item = models.ForeignKey(Menu, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredients,   on_delete=models.CASCADE)
     ingredient_quantity = models.FloatField(blank=True, null=True)
 

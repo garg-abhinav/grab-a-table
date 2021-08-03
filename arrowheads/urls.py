@@ -32,4 +32,4 @@ urlpatterns = [
     path('order/', Order.as_view(), name='order'),
     path('order-confirmation/<int:pk>', OrderConfirmation.as_view(),
          name='order-confirmation'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -22,15 +22,9 @@
                 <td>{{inventory.qty_available}}</td>
                 <td>{{inventory.last_update_timestamp}}</td>
                 <td>
-                    <a href="{% url 'inventory_update' inventory.id %}" class="btn btn-outline-info text-primary px-0">
+                    <a href="{% url 'inventory_update' inventory.inventory_id %}" class="btn btn-outline-info text-primary px-0">
                         <i class="far fa-edit fa-lg"></i>
                     </a>
-                    <form action="{% url 'inventory_delete' inventory.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn">
-                            <i class="far fa-trash-alt fa-lg text-danger float-right"></i>
-                        </button>
-                    </form>
                 </td>
             </tr>
         {% endfor %}
