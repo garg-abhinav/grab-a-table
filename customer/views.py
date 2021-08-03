@@ -98,7 +98,7 @@ class CustomerOrderDetails(View):
             'food': food
         }
 
-        return render(request, 'restaurant/order-details.html', context)
+        return render(request, 'customer/customer_order_details.html', context)
 
 
 
